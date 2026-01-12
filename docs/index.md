@@ -1,5 +1,5 @@
 <figure markdown="1">
-![Sealed Intelligence Logo](./assets/logo-with-title.png){ width="150" }
+![Sealed Intelligence Logo](./assets/logo-with-title.png){ width="250" }
 </figure>
 
 <a href="https://sealedintelligence.com" target="_blank">Sealed Intelligence</a> is an AI-powered data analytics assistant that enables users to ask data-related questions, request analysis, create visualizations, generate forecasts and more, all using natural language (in their native language).
