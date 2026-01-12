@@ -1,0 +1,11 @@
+sealedintelligence-portable-windows
+venv/
+__pycache__/
+*.pyc
+commands
+
+*.py
+!**/models.py
+!**/__init__.py
+!**/alembic/**/*.py
+!**/python/**/*.py
