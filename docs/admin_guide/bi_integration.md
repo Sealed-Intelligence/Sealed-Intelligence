@@ -1,0 +1,28 @@
+# BI Integration
+
+Connecting Sealed Intelligence to your BI tool allows you to
+
+- Use the database connections defined in your BI tool for Sealed Intelligence
+- Use the dashboards created in your BI tool as a data source for answering questions in Sealed Intelligence
+- Use the ['Dashboards + Chatbot' interface](./admin_panel_overview.md#bi-integration), where one or more dashboards are shown on the left (with a dashboard picker to switch between dashboards) and the chatbot is shown on the right. This interface is ideal for customer-facing analytics where you are sharing one or more dashboards with your customers.
+
+!!! note
+
+    Currently only **Metabase** is supported for BI integration. If you need integration with other BI tools, let us know.
+
+### Preparations
+
+- Create a collection in your Metabase instance for Sealed Intelligence and note down its collection ID (only the numerical part).
+- Create an API key in your Metabase instance (Metabase Admin Panel > Authentication > API Keys), and add it to the Administrators group. Note down the API key.
+- In Metabase, add "(Sealed Intelligence)" to the end of the display name of the DB connection that you want to query.
+
+### Configuration
+
+- Go to Sealed Intelligence Admin Panel > BI Integration
+- Provide the details for connecting to Metabase and save.
+- Refresh the page.
+- Go to Sealed Intelligence Admin Panel > Database Connections
+- Click on 'Sync with Metabase'
+- Click on the connection name(s) retrieved from Metabase
+- Manage table permissions and metadata similar to manually-added connections.
+

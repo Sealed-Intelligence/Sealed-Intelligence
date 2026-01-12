@@ -1,0 +1,11 @@
+# Sealed Intelligence Application Database
+SI_DB_HOST=***
+SI_DB_DATABASE=***
+SI_DB_PORT=***
+SI_DB_USER=***
+SI_DB_PASS=***
+
+SI_AUTH_KEY=***  # The key used for password hashing and token generation.
+                 # Select a random string. Don't change it when upgrading Sealed Intelligence.
+
+SI_LICENCE_KEY=***  # The License key provided to you by the Sealed Intelligence team.

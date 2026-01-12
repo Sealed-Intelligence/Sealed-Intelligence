@@ -1,0 +1,69 @@
+site_name: Sealed Intelligence Documentation
+site_url: https://docs.sealedintelligence.com
+copyright: Copyright &copy; 2026 Intellimenta Analytics Inc.
+
+nav:
+  - Home: index.md
+  - Admin Guide:
+      - Getting Started: admin_guide/getting_started.md
+      - Production Deployment: admin_guide/production_deployment.md
+      - Embedding: admin_guide/embedding.md
+      - Admin Panel Overview: admin_guide/admin_panel_overview.md
+      - Integration with BI Tools: admin_guide/bi_integration.md
+      - Upgrading: admin_guide/upgrading.md
+      - Misc.: admin_guide/misc.md
+  - Other Resources:
+      - Billing: other_resources/billing.md
+
+extra_css:
+  - assets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/sealed-intelligence
+    - icon: fontawesome/brands/github
+      link: https://github.com/sealed-intelligence/sealed-intelligence
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.ico
+  features:
+    - content.code.copy
+    - navigation.expand
+    - navigation.footer
+
+  palette:
+    # Light Mode
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Light mode
+      primary: blue
+      accent: deep purple
+
+    # Dark Mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Dark mode
+      primary: green
+      accent: deep purple
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      use_pygments: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - pymdownx.blocks.caption
+  - toc:
+      permalink: true

@@ -1,0 +1,106 @@
+# Getting Started
+
+Sealed Intelligence can be run in two different modes, depending on your needs:
+
+- **Portable Mode (Windows)**: Ideal for quickly testing Sealed Intelligence on your local machine without setting up any external dependencies. No installation is required—just download the bundle, and launch the app.
+
+- **Docker Mode**: Suitable for both advanced local testing and production deployments. This mode gives you full access to all features, but requires Docker, a PostgreSQL database, and some additional configuration.
+
+
+## Portable Mode
+
+### Launch
+- Download the latest portable version <a href="https://github.com/sealed-intelligence/sealed-intelligence/releases/latest" target="_blank">here</a>.
+- Unzip the file.
+- Click on `launch_sealed_intelligence.bat` to run Sealed Intelligence.
+- Browse `http://127.0.0.1:5000` to access the app.
+
+### Configuration
+
+At the login screen, click on the Sign up button to create an account. After logging in, you can access the admin panel by clicking on the gear icon at the top-right of the app and selecting "Admin Panel".
+
+- **Add a Database Connection**. You can either manually add a connection or sync with your BI tool.
+    - To manually add a database connection, click on 'Add Database Connection'.
+    - To connect your BI tool, see [here](./bi_integration.md).
+- **Managing Access to Database Tables/Views**
+    - Click on [DB Name] > Manage Permissions
+    - Select tables/views that you want to query on.
+    !!! note
+        It is recommended to use views instead of tables for Sealed Intelligence, as they provide greater flexibility. In the views:
+
+        - Include only the columns that are relevant for answering user queries. The fewer irrelevant columns you have, the better the response quality will be.
+        - Filter out rows that are redundant.
+        - Perform renaming, type conversion, or any other transformations that can help make the data cleaner.
+
+- **Managing Semantic Layer and Metadata**
+    - You can provide business metrics, domain-knowledge and descriptions at database, table and column-level (Admin Panel > Database Connections > [DB Name] > Semantic Layer and Metadata Management).
+    - It’s recommended to add descriptions only when it's actually helpful. For example, the column sale_date does not need a description, but a column like abc23 would. 
+    - The `db schema` command shows you what metadata is shared with the LLM when you ask a question.
+
+
+## Docker Mode
+
+### Preparations
+Create a PostgreSQL database to be used as the internal database for the app. There is no need to add any tables; Sealed Intelligence will create those on startup. Note down the following info: `host name`, `database name`, `port`, `username` and `password`.
+
+### Deployment (Test)
+Official Docker image is available via <a href="https://hub.docker.com/r/intellimenta/sealed-intelligence/tags" target="_blank">Sealed Intelligence's Dockerhub repository</a>. It can be deployed on any system that is running Docker.
+
+Create a file for storing environment variables:
+```sh title="env_vars"
+# Sealed Intelligence Application Database
+SI_DB_HOST=***
+SI_DB_DATABASE=***
+SI_DB_PORT=***
+SI_DB_USER=***
+SI_DB_PASS=***
+
+SI_LICENCE_KEY=***  # The License key provided to you by the Sealed Intelligence team.
+SI_AUTH_KEY=***  # The key used for password hashing and token generation.
+                 # Select a random string. Don't change it when upgrading Sealed Intelligence.
+
+SI_ALLOW_HTTP=true  # remove in production
+```
+
+Run the Sealed Intelligence container (assuming the environment variables are stored in the file `env_vars`):
+```sh
+docker run -d -p 5000:5000 --name sealed-intelligence --env-file ./env_vars intellimenta/sealed-intelligence:latest
+```
+You can use the command `docker ps -a` to check if the container is running and see the container id.  
+If the container status is "Exited", you can use `docker logs <container-id>` to see the logs and troubleshoot the issue.  
+Once the container is running, you can access the app at `http://[instance-public-ip]:5000` (`http://127.0.0.1:5000` if deployed locally).
+
+#### Production
+For production deployment (over HTTPS), see [here](./production_deployment.md).
+
+### Configuration
+
+The first user to create an account becomes the admin. They can grant admin privileges to other users by adding them to the Admins group.
+
+After creating an account and logging in as admin, it's time for configuring the app. You can access the admin panel by clicking on the gear icon at the top-right of the app and selecting "Admin Panel".
+
+- **Add a Database Connection**. You can either manually add a connection or sync with your BI tool.
+    - To manually add a database connection, click on 'Add Database Connection'.
+    - To connect your BI tool, see [here](./bi_integration.md).
+- **Manage Users Access to Database Tables/Views**
+    - In Sealed Intelligence, groups are used to manage table-level access; Users are assigned to groups, and groups are given access to tables. 
+    - There are two built-in groups: Admins and Default. All new users are automatically added to the Default group. You can add and manage groups in Admin Panel > User Management > User Groups.
+    - To specify which user groups should have access to which tables from a database, go to Admin Panel > Database Connections > [DB Name] > Manage Permissions.
+    !!! note
+        It is recommended to use views instead of tables for Sealed Intelligence, as they provide greater flexibility. In the views:
+
+        - Include only the columns that are relevant for answering user queries. The fewer irrelevant columns you have, the better the response quality will be.
+        - Filter out rows that are redundant.
+        - Perform renaming, type conversion, or any other transformations that can help make the data cleaner.
+
+- **Manage Semantic Layer and Metadata**
+    - You can provide business metrics, domain-knowledge and descriptions at database, table and column-level (Admin Panel > Database Connections > [DB Name] > Semantic Layer and Metadata Management).
+    - You should add descriptions only when it's actually helpful. For example, the column sale_date does not need a description, but a column like abc23 would. 
+    - The `db schema` command shows you what data is shared with the LLM when you ask a question.
+- **Email Setup**
+Setup email (Settings > Admin Panel > Email Setup) so new users can verify their email address. It's also used for password-reset functionality.
+- **Query Suggestions**
+New users usually don't know what type of questions they can ask. Adding query suggestions (Settings > Admin Panel > Query Suggestions) can greatly help with that. Users would see the query suggestions in the main page when they login.
+- **Add Text-to-SQL Translation Tests**  
+When Sealed Intelligence answers users' analytical questions, it goes through a series of steps. One of the most critical steps is the text-to-SQL translation. If this step is not performed correctly, the insights provided to users may be unreliable.  
+For this reason, it is crucial to ensure that the text-to-SQL translation is working correctly. See [here](./admin_panel_overview.md#text-to-sql-translation-tests) for more details.
