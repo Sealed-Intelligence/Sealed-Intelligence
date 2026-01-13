@@ -1,6 +1,6 @@
 # Getting Started
 
-Sealed Intelligence can be run in two different modes, depending on your needs:
+<!-- Sealed Intelligence can be run in two different modes, depending on your needs:
 
 - **Portable Mode (Windows)**: Ideal for quickly testing Sealed Intelligence on your local machine without setting up any external dependencies. No installation is required—just download the bundle, and launch the app.
 
@@ -38,17 +38,77 @@ At the login screen, click on the Sign up button to create an account. After log
     - The `db schema` command shows you what metadata is shared with the LLM when you ask a question.
 
 
-## Docker Mode
+## Docker Mode -->
+## Deployment (Test)
 
-### Preparations
-Create a PostgreSQL database to be used as the internal database for the app. There is no need to add any tables; Sealed Intelligence will create those on startup. Note down the following info: `host name`, `database name`, `port`, `username` and `password`.
+Below we provide instructions for deploying Sealed Intelligence on a VM with public IP over HTTP for testing. For **production deployment**, please see [here](./production_deployment.md).
 
-### Deployment (Test)
-Official Docker image is available via <a href="https://hub.docker.com/r/intellimenta/sealed-intelligence/tags" target="_blank">Sealed Intelligence's Dockerhub repository</a>. It can be deployed on any system that is running Docker.
+### Step 1: Launch a Linux server with a public IP (recommended: Ubuntu 22.04+)  
+For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VRAM, 4 vCPU and 16GB RAM. NVIDIA L4 GPUs are a good choice for LLM inference for testing (and light production). On AWS the instance type g6.xlarge meets these criterias.  
 
-Create a file for storing environment variables:
-```sh title="env_vars"
-# Sealed Intelligence Application Database
+=== "Python"
+
+    This section explains the Python version.
+
+    - Easy to read
+    - Great for scripting
+    - Huge ecosystem
+
+=== "JavaScript"
+
+    This section explains the JavaScript version.
+
+    - Runs in the browser
+    - Great for web apps
+    - Async by default
+
+
+For an AWS VM:
+    - Launch new EC2 instance
+    - Select ubuntu as OS type
+    - For Amazon Machine Image (AMI), choose *Deep Learning Base AMI with Single CUDA* as it has the required libraries and packages already installed
+    - For instance type, select g6.xlarge
+    - For storage, allow 100 GB
+    - For security group
+      - Allow inbound **TCP 80**
+      - Allow inbound **TCP 22** for SSH
+
+### Step 2: Create a PostgreSQL DB
+This will be used as the internal database for the app. There is no need to add any tables; Sealed Intelligence will create those on startup. Note down the following info: **host name**, **database name**, **port**, **username** and **password**.  
+In the DB security group allow **5432/tcp** from the VM to database host
+
+### Step 3: Create a directory for Sealed Intelligence
+SSH into the server and run the following command:
+```
+mkdir sealed-intelligence
+cd sealed-intelligence
+```
+
+### Step 4: Check if Docker is already installed
+```sh
+docker --version
+```
+If Docker is installed, you’ll see something like `Docker version 24.x.x, build …`.  In this case **skip step 5**.
+
+### Step 5: Install Docker 
+```sh
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+curl -fsSL https://get.docker.com | sudo sh
+```
+Verify installation:
+```sh
+docker --version
+docker compose version
+```
+Allow running Docker without sudo:
+```sh
+sudo usermod -aG docker $USER
+newgrp docker
+```
+### Step 6: Create `si.env` and `docker-compose.yaml` files
+`si.env` (replace `***` with actual values)
+```
 SI_DB_HOST=***
 SI_DB_DATABASE=***
 SI_DB_PORT=***
@@ -56,26 +116,50 @@ SI_DB_USER=***
 SI_DB_PASS=***
 
 SI_LICENCE_KEY=***  # The License key provided to you by the Sealed Intelligence team.
-SI_AUTH_KEY=***  # The key used for password hashing and token generation.
-                 # Select a random string. Don't change it when upgrading Sealed Intelligence.
+SI_AUTH_KEY=***     # The key used for password hashing and token generation.
+                    # Select a random string. Don't change it when upgrading Sealed Intelligence.
 
 SI_ALLOW_HTTP=true  # remove in production
 ```
+`docker-compose.yaml`
+```yaml
+services:
+  llm:
+    image: vllm/vllm-openai:v0.13.0
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    ipc: host
+    container_name: llm
+    volumes:
+      - ./hf-cache:/root/.cache/huggingface
+    command:
+      - --model=openai/gpt-oss-20b
+      - --enable-auto-tool-choice
+      - --tool-call-parser=openai
+      - --reasoning-parser=openai_gptoss
+      - --host=0.0.0.0
+      - --port=8000
+    restart: unless-stopped
 
-Run the Sealed Intelligence container (assuming the environment variables are stored in the file `env_vars`):
-```sh
-docker run -d -p 5000:5000 --name sealed-intelligence --env-file ./env_vars intellimenta/sealed-intelligence:latest
+  sealed-intelligence:
+    # it's recommended to use a specific image tag instead of 'latest'
+    image: intellimenta/sealed-intelligence:latest
+    container_name: sealed-intelligence
+    env_file:
+      - ./si.env
+    restart: unless-stopped
 ```
-You can use the command `docker ps -a` to check if the container is running and see the container id.  
-If the container status is "Exited", you can use `docker logs <container-id>` to see the logs and troubleshoot the issue.  
-Once the container is running, you can access the app at `http://[instance-public-ip]:5000` (`http://127.0.0.1:5000` if deployed locally).
 
-#### Production
-For production deployment (over HTTPS), see [here](./production_deployment.md).
+### Step 7: Deploy
+- `docker compose up -d`
+- Follow the LLM serving logs: `docker compose logs -f llm`  
+- Check Status: `docker compose ps -a`
+- If the Sealed Intelligence container status is "Exited", you can use `docker compose logs sealed-intelligence` to see the logs and troubleshoot the issue.
+- Verify deployment is working by browsing `http://<VM-IP-Address>`
 
-### Configuration
 
-The first user to create an account becomes the admin. They can grant admin privileges to other users by adding them to the Admins group.
+## Configuration
 
 After creating an account and logging in as admin, it's time for configuring the app. You can access the admin panel by clicking on the gear icon at the top-right of the app and selecting "Admin Panel".
 

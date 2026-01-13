@@ -69,15 +69,38 @@ SI_AUTH_KEY=***  # The key used for password hashing and token generation.
 `docker-compose.yaml`
 ```yaml
 services:
+  llm:
+    image: vllm/vllm-openai:v0.13.0
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    ipc: host
+    container_name: llm
+    volumes:
+      - ./hf-cache:/root/.cache/huggingface
+    command:
+      - --model=openai/gpt-oss-20b
+      - --enable-auto-tool-choice
+      - --tool-call-parser=openai
+      - --reasoning-parser=openai_gptoss
+      - --host=0.0.0.0
+      - --port=8000
+    restart: unless-stopped
+
   sealed-intelligence:
     # it's recommended to use a specific image tag instead of using 'latest'
     image: intellimenta/sealed-intelligence:latest
+    container_name: sealed-intelligence
     env_file:
       - ./env_vars
+    environment:
+      - OPENAI_BASE_URL=http://llm:8000/v1
+      - OPENAI_MODEL=openai/gpt-oss-20b
     restart: unless-stopped
 
   caddy:
     image: caddy:2
+    container_name: caddy
     ports:
       - "80:80"
       - "443:443"
@@ -114,12 +137,33 @@ If DNS and ports are correct, Caddy will automatically obtain and renew TLS cert
 When the VM is privare, Caddy shouldn't be part of the docker-compose.yaml:
 ```yaml
 services:
+  llm:
+    image: vllm/vllm-openai:v0.13.0
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    ipc: host
+    container_name: llm
+    volumes:
+      - ./hf-cache:/root/.cache/huggingface
+    command:
+      - --model=openai/gpt-oss-20b
+      - --enable-auto-tool-choice
+      - --tool-call-parser=openai
+      - --reasoning-parser=openai_gptoss
+      - --host=0.0.0.0
+      - --port=8000
+    restart: unless-stopped
+
   sealed-intelligence:
-    # it's recommended to pin to a specific (e.g., intellimenta/sealed-intelligence:v0.9) 
-    # instead of using the 'latest' tag
+    # it's recommended to use a specific image tag instead of using 'latest'
     image: intellimenta/sealed-intelligence:latest
+    container_name: sealed-intelligence
     env_file:
       - ./env_vars
+    environment:
+      - OPENAI_BASE_URL=http://llm:8000/v1
+      - OPENAI_MODEL=openai/gpt-oss-20b
     restart: unless-stopped
 ```
 If Sealed Intelligence is meant to be accessed only from the client’s private network, then:

@@ -60,6 +60,8 @@ markdown_extensions:
       line_spans: __span
       pygments_lang_class: true
       use_pygments: true
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - attr_list
