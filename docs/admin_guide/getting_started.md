@@ -50,9 +50,9 @@ For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VR
 
     - Launch new EC2 instance
     - Select ubuntu as OS type
-    - For Amazon Machine Image (AMI), choose *Deep Learning Base AMI with Single CUDA* as it has the required libraries and packages already installed
-    - For instance type, select g6.xlarge
-    - For storage, allow 100 GB
+    - Amazon Machine Image (AMI): **Deep Learning Base AMI with Single CUDA** (it has the required libraries and packages already installed)
+    - Instance type: **g6.xlarge**
+    - Storage: 100 GB
     - For security group
         - Allow inbound **TCP 5000**
 
@@ -64,9 +64,9 @@ For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VR
         - GPU Type: L4
         - Machine Type: n1-standard-4
     - "OS and storage" tab
-        - Click 'Change' button in the middle of page
-        - Operating system: Deep Learning on Linux
-        - Version: Deep Learning VM with CUDA + Pytorch M131 
+        - Click 'Change' button in the middle of the page
+        - Operating system: **Deep Learning on Linux**
+        - Version: **Deep Learning VM with CUDA + Pytorch M131** 
         - Size: 100
     - Create
     - After Creation:
