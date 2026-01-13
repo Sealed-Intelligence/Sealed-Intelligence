@@ -1,4 +1,0 @@
-# replace "sealed-intelligence.yourdomain.com" with your real hostname
-sealed-intelligence.yourdomain.com {
-  reverse_proxy sealed-intelligence:5000
-}
