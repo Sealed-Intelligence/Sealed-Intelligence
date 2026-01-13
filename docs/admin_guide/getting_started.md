@@ -54,23 +54,23 @@ For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VR
     - For instance type, select g6.xlarge
     - For storage, allow 100 GB
     - For security group
-      - Allow inbound **TCP 80**
-      - Allow inbound **TCP 22** for SSH
+        - Allow inbound **TCP 80**
+        - Allow inbound **TCP 22** for SSH
 
 === "Google Cloud"
 
     - Go to Compute Engine → VM instances → Create instance
     - "Machine Configuration" tab
-      - Select "GPUs"
-      - GPU Type: L4
-      - Machine Type: n1-standard-4
+        - Select "GPUs"
+        - GPU Type: L4
+        - Machine Type: n1-standard-4
     - "OS and storage" tab
-      - Click 'Change' button in the middle of page
-      - Operating system: Deep Learning on Linux
-      - Version: Deep Learning VM with CUDA + Pytorch M131 
-      - Size: 100
+        - Click 'Change' button in the middle of page
+        - Operating system: Deep Learning on Linux
+        - Version: Deep Learning VM with CUDA + Pytorch M131 
+        - Size: 100
     - "Networking" tab
-      - Allow HTTP traffic
+        - Allow HTTP traffic
 
 ### Step 2: Create a PostgreSQL DB
 This will be used as the internal database for the app. There is no need to add any tables; Sealed Intelligence will create those on startup. Note down the following info: **host name**, **database name**, **port**, **username** and **password**.  
