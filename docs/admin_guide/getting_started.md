@@ -44,7 +44,7 @@ At the login screen, click on the Sign up button to create an account. After log
 Below we provide instructions for deploying Sealed Intelligence on a VM with public IP over HTTP for testing. For **production deployment**, please see [here](./production_deployment.md).
 
 ### Step 1: Launch a Linux server with a public IP 
-For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VRAM, 4 vCPU and 16GB RAM. NVIDIA L4 GPUs are a good choice for LLM inference for testing (and light production). On AWS the instance type g6.xlarge meets these criterias.  
+For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VRAM. NVIDIA L4 GPUs are a good choice for LLM inference for testing (and light production).
 
 === "AWS"
 
@@ -54,8 +54,7 @@ For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VR
     - For instance type, select g6.xlarge
     - For storage, allow 100 GB
     - For security group
-        - Allow inbound **TCP 80**
-        - Allow inbound **TCP 22** for SSH
+        - Allow inbound **TCP 5000**
 
 === "Google Cloud"
 
@@ -69,8 +68,11 @@ For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VR
         - Operating system: Deep Learning on Linux
         - Version: Deep Learning VM with CUDA + Pytorch M131 
         - Size: 100
-    - "Networking" tab
-        - Allow HTTP traffic
+    - Create
+    - After Creation:
+        - Click on the instance, in Network interface click 'View details' under 'Network details'.
+        - Create VPC firewall rule
+        - Allow inbound **TCP 5000**
 
 ### Step 2: Create a PostgreSQL DB
 This will be used as the internal database for the app. There is no need to add any tables; Sealed Intelligence will create those on startup. Note down the following info: **host name**, **database name**, **port**, **username** and **password**.  
@@ -147,6 +149,8 @@ services:
     container_name: sealed-intelligence
     env_file:
       - ./si.env
+    ports:
+      - "5000:5000"
     restart: unless-stopped
 ```
 
@@ -155,7 +159,7 @@ services:
 - Check Status: `docker compose ps -a`
 - If the Sealed Intelligence container status is "Exited", you can use `docker compose logs sealed-intelligence` to see the logs and troubleshoot the issue. After troubleshooting you can restart that container using `docker compose restart sealed-intelligence`
 - Follow the LLM container logs: `docker compose logs -f llm`. Once it shows "Application startup complete", the LLM container is ready.
-- Verify deployment is working by browsing `http://<VM-IP-Address>`
+- Verify deployment is working by browsing `http://<VM-Public-IP>:5000`
 
 
 ## Configuration
