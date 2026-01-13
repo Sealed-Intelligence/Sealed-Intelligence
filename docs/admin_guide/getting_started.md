@@ -43,27 +43,11 @@ At the login screen, click on the Sign up button to create an account. After log
 
 Below we provide instructions for deploying Sealed Intelligence on a VM with public IP over HTTP for testing. For **production deployment**, please see [here](./production_deployment.md).
 
-### Step 1: Launch a Linux server with a public IP (recommended: Ubuntu 22.04+)  
+### Step 1: Launch a Linux server with a public IP 
 For serving the LLM (gpt-oss-20b) the VM should have a GPU with at least 24GB VRAM, 4 vCPU and 16GB RAM. NVIDIA L4 GPUs are a good choice for LLM inference for testing (and light production). On AWS the instance type g6.xlarge meets these criterias.  
 
-=== "Python"
+=== "AWS"
 
-    This section explains the Python version.
-
-    - Easy to read
-    - Great for scripting
-    - Huge ecosystem
-
-=== "JavaScript"
-
-    This section explains the JavaScript version.
-
-    - Runs in the browser
-    - Great for web apps
-    - Async by default
-
-
-For an AWS VM:
     - Launch new EC2 instance
     - Select ubuntu as OS type
     - For Amazon Machine Image (AMI), choose *Deep Learning Base AMI with Single CUDA* as it has the required libraries and packages already installed
@@ -72,6 +56,21 @@ For an AWS VM:
     - For security group
       - Allow inbound **TCP 80**
       - Allow inbound **TCP 22** for SSH
+
+=== "Google Cloud"
+
+    - Go to Compute Engine → VM instances → Create instance
+    - "Machine Configuration" tab
+      - Select "GPUs"
+      - GPU Type: L4
+      - Machine Type: n1-standard-4
+    - "OS and storage" tab
+      - Click 'Change' button in the middle of page
+      - Operating system: Deep Learning on Linux
+      - Version: Deep Learning VM with CUDA + Pytorch M131 
+      - Size: 100
+    - "Networking" tab
+      - Allow HTTP traffic
 
 ### Step 2: Create a PostgreSQL DB
 This will be used as the internal database for the app. There is no need to add any tables; Sealed Intelligence will create those on startup. Note down the following info: **host name**, **database name**, **port**, **username** and **password**.  
@@ -126,11 +125,11 @@ SI_ALLOW_HTTP=true  # remove in production
 services:
   llm:
     image: vllm/vllm-openai:v0.13.0
-    runtime: nvidia
+    container_name: llm
+    gpus: all
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     ipc: host
-    container_name: llm
     volumes:
       - ./hf-cache:/root/.cache/huggingface
     command:
@@ -153,9 +152,9 @@ services:
 
 ### Step 7: Deploy
 - `docker compose up -d`
-- Follow the LLM serving logs: `docker compose logs -f llm`  
 - Check Status: `docker compose ps -a`
-- If the Sealed Intelligence container status is "Exited", you can use `docker compose logs sealed-intelligence` to see the logs and troubleshoot the issue.
+- If the Sealed Intelligence container status is "Exited", you can use `docker compose logs sealed-intelligence` to see the logs and troubleshoot the issue. After troubleshooting you can restart that container using `docker compose restart sealed-intelligence`
+- Follow the LLM container logs: `docker compose logs -f llm`. Once it shows "Application startup complete", the LLM container is ready.
 - Verify deployment is working by browsing `http://<VM-IP-Address>`
 
 

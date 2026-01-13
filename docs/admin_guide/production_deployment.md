@@ -71,11 +71,11 @@ SI_AUTH_KEY=***  # The key used for password hashing and token generation.
 services:
   llm:
     image: vllm/vllm-openai:v0.13.0
-    runtime: nvidia
+    container_name: llm
+    gpus: all
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     ipc: host
-    container_name: llm
     volumes:
       - ./hf-cache:/root/.cache/huggingface
     command:
@@ -128,7 +128,7 @@ sealed-intelligence.yourdomain.com {
 ### Step 6: Deploy
 - Start Sealed Intelligence + Caddy: `docker compose up -d`  
 - Check Status: `docker compose ps -a`  
-- If the Sealed Intelligence container status is "Exited", you can use `docker compose logs sealed-intelligence` to see the logs and troubleshoot the issue.
+- If the Sealed Intelligence container status is "Exited", you can use `docker compose logs sealed-intelligence` to see the logs and troubleshoot the issue. After troubleshooting you can restart that container using `docker compose restart sealed-intelligence`
 - Follow Caddy logs: `docker compose logs -f caddy`  
 If DNS and ports are correct, Caddy will automatically obtain and renew TLS certificates.
 - Verify deployment is working by browsing `https://<your-domain>`
