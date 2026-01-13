@@ -109,7 +109,7 @@ newgrp docker
 ```
 ### Step 6: Create `si.env` and `docker-compose.yaml` files
 `si.env` (replace `***` with actual values)
-```
+```sh
 SI_DB_HOST=***
 SI_DB_DATABASE=***
 SI_DB_PORT=***
