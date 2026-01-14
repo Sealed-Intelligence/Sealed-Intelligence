@@ -37,7 +37,6 @@ At the login screen, click on the Sign up button to create an account. After log
     - It’s recommended to add descriptions only when it's actually helpful. For example, the column sale_date does not need a description, but a column like abc23 would. 
     - The `db schema` command shows you what metadata is shared with the LLM when you ask a question.
 
-
 ## Docker Mode -->
 ## Deployment (Test)
 
