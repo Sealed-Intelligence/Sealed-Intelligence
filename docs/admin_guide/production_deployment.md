@@ -2,7 +2,7 @@
 
 For production deployment, it's recommended to run the app over HTTPS. The environment variable `SI_ALLOW_HTTP` should be removed or set to `false`.
 
-For serving the app over HTTPS, you can use a load balancer, or a reverse proxy (such as Caddy or Nginx). For reverse-proxy, Caddy is preferred as it handles https and WebCockets automatically (Sealed Intelligence uses WebSockets).  
+For serving the app over HTTPS, you can use a load balancer, or a reverse proxy (such as Caddy or Nginx). For reverse-proxy, Caddy is preferred as it handles https and WebSockets automatically (Sealed Intelligence uses WebSockets).  
 If you are using a Load Balancer, the healthcheck endpoint is `/healthcheck`.
 
 ## Deployment on a VM with Public IP Using Reverse-Proxy
