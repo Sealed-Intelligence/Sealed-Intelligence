@@ -135,6 +135,7 @@ services:
       - ./hf-cache:/root/.cache/huggingface
     command:
       - --model=openai/gpt-oss-20b
+      - --revision=6cee5e81ee83917806bbde320786a8fb61efebee
       - --enable-auto-tool-choice
       - --tool-call-parser=openai
       - --reasoning-parser=openai_gptoss
